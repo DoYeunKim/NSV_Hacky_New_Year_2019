@@ -47,7 +47,7 @@ print('*' *80, '\n')
 
 
 
-print('DONE! Phew, I am good! Record Time!', '\n\nI also loaded the following functions:\n\n\tpull_all_text(df)\n\tadd_to_library(df)\n\tclean_the_text(raw_text)\n\tdrop_onenglish_words(text)\n\tremove_puntuation(text)\n\tstrip_html_tags(text)\n\tremove_accented_characters(text)\n\texpand_contractions(text, contraction_mapping=CONTRACTION_MAP\n\tremove_special_characters(text, remove_digits=False)\n\tsimple_stemmer(text)\n\tlemmatize_text(text)\n\tremove_stopwords(text, is_lower_case=False)\n\tnormalize_corpus(corpus, html_stripping=True, contraction_expansion=True, accented_char_removal=True, text\n\t\t_lower_case=True, text_lemmatization=True, special_char_removal=True, stopword_removal=True, \n\t\tremove_digits=True)\n\timport_pdf(file_path)\n\ttokenize_by_sentences(text)\n\ttokenize_by_words(text)\n\tfind_keywords(text)\n\tpos_tag(text)\n\tnormalize_corpus(text)')
+print('DONE! Phew, I am good! Record Time!', '\n\nI also loaded the following functions:\n\n\tpull_all_text(df)\n\tadd_to_library(df)\n\tclean_the_text(raw_text)\n\tdrop_onenglish_words(text)\n\tremove_puntuation(text)\n\tstrip_html_tags(text)\n\tremove_accented_characters(text)\n\texpand_contractions(text, contraction_mapping=CONTRACTION_MAP\n\tremove_special_characters(text, remove_digits=False)\n\tsimple_stemmer(text)\n\tlemmatize_text(text)\n\tremove_stopwords(text, is_lower_case=False)\n\tnormalize_corpus(corpus, html_stripping=True, contraction_expansion=True, accented_char_removal=True, text\n\t\t_lower_case=True, text_lemmatization=True, special_char_removal=True, stopword_removal=True, \n\t\tremove_digits=True)\n\timport_pdf(file_path)\n\ttokenize_by_sentences(text)\n\ttokenize_by_words(text)\n\tfind_keywords(text)\n\tpos_tag(text)\n\tnormalize_corpus(text)\n\t')
 
 
 # nlp = spacy.load('en_core', parse=True, tag=True, entity=True)
@@ -449,6 +449,22 @@ def countwords(dic,length):
     return tsum
 
 # count average number of words per sentence
+def avgwordspersentence(words):
+    counter=0
+    avg=0
+    noofsentences=0
+    for i in words:
+        if(i!='.'):#and i!=','
+            counter=counter+1
+        else:
+            noofsentences+=1
+            avg+=counter            
+            counter=0
+    avg=avg/noofsentences
+    return avg
+
+
+
 def avgwordspersentence(words):
     counter=0
     avg=0
