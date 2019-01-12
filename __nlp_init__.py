@@ -35,9 +35,9 @@ import textract
 print('Imported textract')
 from gensim.summarization import keywords
 print("Imported gensim's keywords")
-import pyphen
-print('Imported pyphen')
-
+from textblob import TextBlob
+print('Imported TextBlob')
+      
 
 # Needed for summarizing and reading in text from PDF
 import logging
@@ -47,7 +47,7 @@ print('*' *80, '\n')
 
 
 
-print('DONE! Phew, I am good! Record Time!', '\n\nI also loaded the following functions:\n\n\tpull_all_text(df)\n\tadd_to_library(df)\n\tclean_the_text(raw_text)\n\tdrop_onenglish_words(text)\n\tremove_puntuation(text)\n\tstrip_html_tags(text)\n\tremove_accented_characters(text)\n\texpand_contractions(text, contraction_mapping=CONTRACTION_MAP\n\tremove_special_characters(text, remove_digits=False)\n\tsimple_stemmer(text)\n\tlemmatize_text(text)\n\tremove_stopwords(text, is_lower_case=False)\n\tnormalize_corpus(corpus, html_stripping=True, contraction_expansion=True, accented_char_removal=True, text\n\t\t_lower_case=True, text_lemmatization=True, special_char_removal=True, stopword_removal=True, \n\t\tremove_digits=True)\n\timport_pdf(file_path)\n\ttokenize_by_sentences(text)\n\ttokenize_by_words(text)\n\tfind_keywords(text)\n\tpos_tag(text)\n\tnormalize_corpus(text)\n\t')
+print('DONE! Phew, I am good! Record Time!', '\n\nI also loaded the following functions:\n\n\tpull_all_text(df)\n\tadd_to_library(df)\n\tclean_the_text(raw_text)\n\tdrop_onenglish_words(text)\n\tremove_puntuation(text)\n\tstrip_html_tags(text)\n\tremove_accented_characters(text)\n\texpand_contractions(text, contraction_mapping=CONTRACTION_MAP\n\tremove_special_characters(text, remove_digits=False)\n\tsimple_stemmer(text)\n\tlemmatize_text(text)\n\tremove_stopwords(text, is_lower_case=False)\n\tnormalize_corpus(corpus, html_stripping=True, contraction_expansion=True, accented_char_removal=True, text\n\t\t_lower_case=True, text_lemmatization=True, special_char_removal=True, stopword_removal=True, \n\t\tremove_digits=True)\n\timport_pdf(file_path)\n\ttokenize_by_sentences(text)\n\ttokenize_by_words(text)\n\tfind_keywords(text)\n\tpos_tag(text)\n\tnormalize_corpus(text)')
 
 
 # nlp = spacy.load('en_core', parse=True, tag=True, entity=True)
@@ -189,7 +189,8 @@ def clean_the_text(text, remove_numbers=False):
     import re
     clean = re.compile('<.*?>}{')
     text = re.sub(clean, '', text)
-    
+    text = text.replace('b"', '')
+    text = text.replace("b'", '')
     text = text.replace("\'", "'")
     text = text.replace('\\n', ' ')
     text = text.replace('\\xc2\\xae', '')
@@ -200,7 +201,6 @@ def clean_the_text(text, remove_numbers=False):
     text = text.replace('\\xc2\\xa9 ', '')
     text = text.replace('\\xe2\\x80\\x9c', '')
     text = text.replace('xe2x80x93', ',')
-    text = text.replace('xe2x88x92', '')
     text = text.replace('\\x0c', '')
     text = text.replace('\\xe2\\x80\\x9d', '')
     text = text.replace('\\xe2\\x80\\x90', '')
@@ -233,9 +233,9 @@ def clean_the_text(text, remove_numbers=False):
     text = text.replace('tttt ', '')
     text = text.replace(' tt ', ' ')
     text = text.replace(' t ', ' ')
-    text = text.replace(' t tt t', ' ')
     text = text.replace('ttt', '')
     text = text.replace('ttr', '')
+    text = text.replace(' >t ', '')
     text = text.replace('.display', '')
     text = text.replace('div class', '')
     text = text.replace('div id', ' ')
@@ -243,6 +243,7 @@ def clean_the_text(text, remove_numbers=False):
     text = text.replace('xc2xa0a', ' ')
     text = text.replace(' b ', '')
     text = text.replace('rrrr', '')
+    text = text.replace('r r r r r ', '')
     text = text.replace('rtttr', '')
     text = text.replace('    ', ' ')
     text = text.replace('   ', ' ')
@@ -250,16 +251,21 @@ def clean_the_text(text, remove_numbers=False):
     text = text.replace(' r ', ' ')
     text = text.replace(' tr ', ' ')
     text = text.replace(' rr  r  ', ' ')
+    text = text.replace('r r r', '')
+    text = text.replace('* t', '* ')
+    text = text.replace('r *', ' *')
     text = text.replace('   tt t t rt ', ' ')
     text = text.replace('r rrr r trr ', ' ')
+    text = text.replace(' r t', '')
+    text = text.replace(' r tt', '')
     text = text.replace(' xe2x80x93 ', ' ')
     text = text.replace(' xe6xa8x82xe9xbdxa1xe6x9cx83  ', ' ')
     text = text.replace(' rrr ', ' ')
     text = text.replace(' rr ', ' ')
+    text = text.replace(' r r ', '')
     text = text.replace('tr ', '')
-    text = text.replace(' r ', '')
-    text = text.replace("\'", "")
-    text = text.replace(' t* ', ', ')
+    text = text.replace('* xe7xaex80xe4xbdx93xe4xb8xadxe6x96x87', '')
+    text = text.replace('tt*', '')
     
 
     return text
@@ -424,69 +430,3 @@ def import_pdf(file_path):
     import textract
     text = textract.process(file_path)
     return text
-
-
-# count the frequency of words in a sentence
-def word_count(str):
-    counts = dict()
-    words = str.split()
-
-    for word in words:
-        if word in counts:
-            counts[word] += 1
-        else:
-            counts[word] = 1
-
-    return counts
-
-#counts number of words of a particular length (dict = string or frequency distribution
-def countwords(dic,length):
-    tsum=0
-    for i in dic:
-        if len(i)==length:
-            tsum=tsum+dic[i]
-            #print(i,dic[i])
-    return tsum
-
-# count average number of words per sentence
-def avgwordspersentence(words):
-    counter=0
-    avg=0
-    noofsentences=0
-    for i in words:
-        if(i!='.'):#and i!=','
-            counter=counter+1
-        else:
-            noofsentences+=1
-            avg+=counter            
-            counter=0
-    avg=avg/noofsentences
-    return avg
-
-
-
-def avgwordspersentence(words):
-    counter=0
-    avg=0
-    noofsentences=0
-    for i in words:
-        if(i!='.'):#and i!=','
-            counter=counter+1
-        else:
-            noofsentences+=1
-            avg+=counter            
-            counter=0
-    avg=avg/noofsentences
-    return avg
-
-
-# count the number of words per sentence
-
-def noofsyllabes(corpus):
-    import pyphen
-    dic = pyphen.Pyphen(lang='en')
-    num=0
-    for x in corpus:
-        s=dic.inserted(x)
-        num=num+s.count('-')+1
-    return num
